@@ -42,15 +42,18 @@ ArgParser::parseServerArgs(lib::synergy::ServerArgs& args, int argc, const char*
 {
     setArgsBase(args);
     updateCommonArgs(argv);
-
-    for (int i = 1; i < argc; ++i) {
+    int i = 1;
+    while ( i < argc) {
         if (parsePlatformArg(args, argc, argv, i)) {
+            ++i;
             continue;
         }
         else if (parseGenericArgs(argc, argv, i)) {
+            ++i;
             continue;
         }
         else if (parseDeprecatedArgs(argc, argv, i)) {
+            ++i;
             continue;
         }
         else if (isArg(i, argc, argv, "-a", "--address", 1)) {
@@ -68,6 +71,7 @@ ArgParser::parseServerArgs(lib::synergy::ServerArgs& args, int argc, const char*
             LOG((CLOG_PRINT "%s: unrecognized option `%s'" BYE, args.m_pname, argv[i], args.m_pname));
             return false;
         }
+        ++i;
     }
 
     if (checkUnexpectedArgs()) {
@@ -83,24 +87,27 @@ ArgParser::parseClientArgs(lib::synergy::ClientArgs& args, int argc, const char*
     setArgsBase(args);
     updateCommonArgs(argv);
 
-    int i;
-    for (i = 1; i < argc; ++i) {
+    int i {1};
+    while (i < argc) {
         if (parsePlatformArg(args, argc, argv, i)) {
+            ++i;
             continue;
         }
         else if (parseGenericArgs(argc, argv, i)) {
+            ++i;
             continue;
         }
         else if (parseDeprecatedArgs(argc, argv, i)) {
+            ++i;
             continue;
         }
-        else if (isArg(i, argc, argv, NULL, "--camp")) {
+        else if (isArg(i, argc, argv, nullptr, "--camp")) {
             // ignore -- included for backwards compatibility
         }
-        else if (isArg(i, argc, argv, NULL, "--no-camp")) {
+        else if (isArg(i, argc, argv, nullptr, "--no-camp")) {
             // ignore -- included for backwards compatibility
         }
-        else if (isArg(i, argc, argv, NULL, "--yscroll", 1)) {
+        else if (isArg(i, argc, argv, nullptr, "--yscroll", 1)) {
             // define scroll
             args.m_yscroll = atoi(argv[++i]);
         }
@@ -113,6 +120,7 @@ ArgParser::parseClientArgs(lib::synergy::ClientArgs& args, int argc, const char*
             LOG((CLOG_PRINT "%s: unrecognized option `%s'" BYE, args.m_pname, argv[i], args.m_pname));
             return false;
         }
+        ++i;
     }
 
     // exactly one non-option argument (server-address)
@@ -133,14 +141,14 @@ bool
 ArgParser::parsePlatformArg(lib::synergy::ArgsBase& argsBase, const int& argc, const char* const* argv, int& i)
 {
 #if WINAPI_MSWINDOWS
-    if (isArg(i, argc, argv, NULL, "--service")) {
+    if (isArg(i, argc, argv, nullptr, "--service")) {
         LOG((CLOG_WARN "obsolete argument --service, use synergyd instead."));
         argsBase.m_shouldExit = true;
     }
-    else if (isArg(i, argc, argv, NULL, "--exit-pause")) {
+    else if (isArg(i, argc, argv, nullptr, "--exit-pause")) {
         argsBase.m_pauseOnExit = true;
     }
-    else if (isArg(i, argc, argv, NULL, "--stop-on-desk-switch")) {
+    else if (isArg(i, argc, argv, nullptr, "--stop-on-desk-switch")) {
         argsBase.m_stopOnDeskSwitch = true;
     }
     else {
@@ -155,7 +163,7 @@ ArgParser::parsePlatformArg(lib::synergy::ArgsBase& argsBase, const int& argc, c
         argsBase.m_display = argv[++i];
     }
 
-    else if (isArg(i, argc, argv, NULL, "--no-xinitthreads")) {
+    else if (isArg(i, argc, argv, nullptr, "--no-xinitthreads")) {
         argsBase.m_disableXInitThreads = true;
     }
 
@@ -176,19 +184,19 @@ ArgParser::parseToolArgs(ToolArgs& args, int argc, const char* const* argv)
 {
     // We support exactly one argument at a fix position
     static const int only_index {1};
-    if (isArg(only_index, argc, argv, NULL, "--get-active-desktop", 0)) {
+    if (isArg(only_index, argc, argv, nullptr, "--get-active-desktop", 0)) {
         args.m_printActiveDesktopName = true;
         return true;
     }
-    else if (isArg(only_index, argc, argv, NULL, "--get-installed-dir", 0)) {
+    else if (isArg(only_index, argc, argv, nullptr, "--get-installed-dir", 0)) {
         args.m_getInstalledDir = true;
         return true;
     }
-    else if (isArg(only_index, argc, argv, NULL, "--get-profile-dir", 0)) {
+    else if (isArg(only_index, argc, argv, nullptr, "--get-profile-dir", 0)) {
         args.m_getProfileDir = true;
         return true;
     }
-    else if (isArg(only_index, argc, argv, NULL, "--get-arch", 0)) {
+    else if (isArg(only_index, argc, argv, nullptr, "--get-arch", 0)) {
         args.m_getArch = true;
         return true;
     }
@@ -209,7 +217,7 @@ ArgParser::parseGenericArgs(int argc, const char* const* argv, int& i)
         // not a daemon
         argsBase().m_daemon = false;
     }
-    else if (isArg(i, argc, argv, NULL, "--daemon")) {
+    else if (isArg(i, argc, argv, nullptr, "--daemon")) {
         // daemonize
         argsBase().m_daemon = true;
     }
@@ -221,14 +229,11 @@ ArgParser::parseGenericArgs(int argc, const char* const* argv, int& i)
         // don't try to restart
         argsBase().m_restartable = false;
     }
-    else if (isArg(i, argc, argv, NULL, "--restart")) {
+    else if (isArg(i, argc, argv, nullptr, "--restart")) {
         // try to restart
         argsBase().m_restartable = true;
     }
-    else if (isArg(i, argc, argv, "-z", NULL)) {
-        argsBase().m_backend = true;
-    }
-    else if (isArg(i, argc, argv, NULL, "--no-hooks")) {
+    else if (isArg(i, argc, argv, nullptr, "--no-hooks")) {
         argsBase().m_noHooks = true;
     }
     else if (isArg(i, argc, argv, "-h", "--help")) {
@@ -237,25 +242,25 @@ ArgParser::parseGenericArgs(int argc, const char* const* argv, int& i)
         }
         argsBase().m_shouldExit = true;
     }
-    else if (isArg(i, argc, argv, NULL, "--version")) {
+    else if (isArg(i, argc, argv, nullptr, "--version")) {
         if (m_app) {
             m_app->version();
         }
         argsBase().m_shouldExit = true;
     }
-    else if (isArg(i, argc, argv, NULL, "--no-tray")) {
+    else if (isArg(i, argc, argv, nullptr, "--no-tray")) {
         argsBase().m_disableTray = true;
     }
-    else if (isArg(i, argc, argv, NULL, "--ipc")) {
+    else if (isArg(i, argc, argv, nullptr, "--ipc")) {
         argsBase().m_enableIpc = true;
     }
-    else if (isArg(i, argc, argv, NULL, "--server")) {
+    else if (isArg(i, argc, argv, nullptr, "--server")) {
         // HACK: stop error happening when using portable (synergyp)
     }
-    else if (isArg(i, argc, argv, NULL, "--client")) {
+    else if (isArg(i, argc, argv, nullptr, "--client")) {
         // HACK: stop error happening when using portable (synergyp)
     }
-    else if (isArg(i, argc, argv, NULL, "--enable-drag-drop")) {
+    else if (isArg(i, argc, argv, nullptr, "--enable-drag-drop")) {
         bool useDragDrop = true;
 
 #ifdef WINAPI_XWINDOWS
@@ -277,17 +282,20 @@ ArgParser::parseGenericArgs(int argc, const char* const* argv, int& i)
             argsBase().m_enableDragDrop = true;
         }
     }
-    else if (isArg(i, argc, argv, NULL, "--enable-crypto")) {
+    else if (isArg(i, argc, argv, nullptr, "--enable-crypto")) {
         argsBase().m_enableCrypto = true;
     }
-    else if (isArg(i, argc, argv, NULL, "--profile-dir", 1)) {
+    else if (isArg(i, argc, argv, nullptr, "--profile-dir", 1)) {
         argsBase().m_profileDirectory = argv[++i];
     }
-    else if (isArg(i, argc, argv, NULL, "--plugin-dir", 1)) {
+    else if (isArg(i, argc, argv, nullptr, "--plugin-dir", 1)) {
         argsBase().m_pluginDirectory = argv[++i];
     }
-    else if (isArg(i, argc, argv, NULL, "--tls-cert", 1)) {
+    else if (isArg(i, argc, argv, nullptr, "--tls-cert", 1)) {
         argsBase().m_tlsCertFile = argv[++i];
+    }
+    else if (isArg(i, argc, argv, nullptr, "--prevent-sleep")) {
+        argsBase().m_preventSleep = true;
     }
     else {
         // option not supported here
@@ -300,30 +308,20 @@ ArgParser::parseGenericArgs(int argc, const char* const* argv, int& i)
 bool
 ArgParser::parseDeprecatedArgs(int argc, const char* const* argv, int& i)
 {
-    if (isArg(i, argc, argv, NULL, "--crypto-pass")) {
-        LOG((CLOG_NOTE "--crypto-pass is deprecated"));
-        i++;
-        return true;
-    }
-    else if (isArg(i, argc, argv, NULL, "--res-w")) {
-        LOG((CLOG_NOTE "--res-w is deprecated"));
-        i++;
-        return true;
-    }
-    else if (isArg(i, argc, argv, NULL, "--res-h")) {
-        LOG((CLOG_NOTE "--res-h is deprecated"));
-        i++;
-        return true;
-    }
-    else if (isArg(i, argc, argv, NULL, "--prm-wc")) {
-        LOG((CLOG_NOTE "--prm-wc is deprecated"));
-        i++;
-        return true;
-    }
-    else if (isArg(i, argc, argv, NULL, "--prm-hc")) {
-        LOG((CLOG_NOTE "--prm-hc is deprecated"));
-        i++;
-        return true;
+    static const std::vector<const char*> deprecatedArgs = {
+        "--crypto-pass",
+        "--res-w",
+        "--res-h",
+        "--prm-wc",
+        "--prm-hc"
+    };
+
+    for (auto& arg : deprecatedArgs) {
+        if (isArg(i, argc, argv, nullptr, arg)) {
+            LOG((CLOG_NOTE "%s is deprecated", arg));
+            i++;
+            return true;
+        }
     }
 
     return false;
@@ -335,8 +333,8 @@ ArgParser::isArg(
     const char* name1, const char* name2,
     int minRequiredParameters)
 {
-    if ((name1 != NULL && strcmp(argv[argi], name1) == 0) ||
-        (name2 != NULL && strcmp(argv[argi], name2) == 0)) {
+    if ((name1 != nullptr && strcmp(argv[argi], name1) == 0) ||
+        (name2 != nullptr && strcmp(argv[argi], name2) == 0)) {
             // match.  check args left.
             if (argi + minRequiredParameters >= argc) {
                 LOG((CLOG_PRINT "%s: missing arguments for `%s'" BYE,

@@ -35,18 +35,18 @@ public:
     {
     }
 
-    MockKeyState(const MockEventQueue& eventQueue, const MockKeyMap& keyMap) :
+    MockKeyState(const MockEventQueue& eventQueue, const synergy::KeyMap& keyMap) :
         KeyState((IEventQueue*)&eventQueue, (synergy::KeyMap&)keyMap)
     {
     }
 
-    MOCK_CONST_METHOD0(pollActiveGroup, SInt32());
-    MOCK_CONST_METHOD0(pollActiveModifiers, KeyModifierMask());
-    MOCK_METHOD0(fakeCtrlAltDel, bool());
-    MOCK_METHOD1(getKeyMap, void(synergy::KeyMap&));
-    MOCK_METHOD1(fakeKey, void(const Keystroke&));
-    MOCK_METHOD1(fakeMediaKey, bool(KeyID));
-    MOCK_CONST_METHOD1(pollPressedKeys, void(KeyButtonSet&));
+    MOCK_METHOD(SInt32, pollActiveGroup, (), (const, override));
+    MOCK_METHOD(KeyModifierMask, pollActiveModifiers, (), (const, override));
+    MOCK_METHOD(bool, fakeCtrlAltDel, (), (override));
+    MOCK_METHOD(void, getKeyMap, (synergy::KeyMap&), (override));
+    MOCK_METHOD(void, fakeKey, (const Keystroke&), (override));
+    MOCK_METHOD(bool, fakeMediaKey, (KeyID), (override));
+    MOCK_METHOD(void, pollPressedKeys, (KeyButtonSet&), (const, override));
 };
 
 typedef ::testing::NiceMock<MockKeyState> KeyStateImpl;

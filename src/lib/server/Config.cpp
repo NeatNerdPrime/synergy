@@ -137,9 +137,9 @@ Config::removeScreen(const String& name)
 			m_nameToCanonicalName.erase(iter++);
 		}
 		else {
-			++index;
+            ++iter;
 		}
-	}
+    }
 }
 
 void
@@ -577,28 +577,30 @@ Config::operator==(const Config& x) const
 		return false;
 	}
 
-	for (CellMap::const_iterator index1 = m_map.begin(),
-								index2 = x.m_map.begin();
-								index1 != m_map.end(); ++index1, ++index2) {
+	auto index2map = x.m_map.cbegin();
+	for (auto const &index1: m_map) {
 		// compare names
-		if (!CaselessCmp::equal(index1->first, index2->first)) {
+		if (!CaselessCmp::equal(index1.first, index2map->first)) {
 			return false;
 		}
 
 		// compare cells
-		if (index1->second != index2->second) {
+		if (index1.second != index2map->second) {
 			return false;
 		}
+		++index2map;
 	}
 
-	for (NameMap::const_iterator index1 = m_nameToCanonicalName.begin(),
-								index2 = x.m_nameToCanonicalName.begin();
-								index1 != m_nameToCanonicalName.end();
-								++index1, ++index2) {
-		if (!CaselessCmp::equal(index1->first,  index2->first) ||
-			!CaselessCmp::equal(index1->second, index2->second)) {
+	auto index2 = x.m_nameToCanonicalName.cbegin();
+	for (auto const &index1: m_nameToCanonicalName) {
+		if (index2 == x.m_nameToCanonicalName.cend()) {
+			return false; // second source ended
+		}
+		if (!CaselessCmp::equal(index1.first,  index2->first) ||
+			!CaselessCmp::equal(index1.second, index2->second)) {
 			return false;
 		}
+		++index2;
 	}
 
 	// compare input filters
@@ -755,9 +757,6 @@ Config::readSectionOptions(ConfigReadContext& s)
 		}
 		else if (name == "switchNeedsAlt") {
 			addOption("", kOptionScreenSwitchNeedsAlt, s.parseBoolean(value));
-		}
-		else if (name == "screenSaverSync") {
-			addOption("", kOptionScreenSaverSync, s.parseBoolean(value));
 		}
 		else if (name == "relativeMouseMoves") {
 			addOption("", kOptionRelativeMouseMoves, s.parseBoolean(value));
@@ -1390,9 +1389,6 @@ Config::getOptionName(OptionID id)
 	if (id == kOptionScreenSwitchNeedsAlt) {
 		return "switchNeedsAlt";
 	}
-	if (id == kOptionScreenSaverSync) {
-		return "screenSaverSync";
-	}
 	if (id == kOptionXTestXineramaUnaware) {
 		return "xtestIsXineramaUnaware";
 	}
@@ -1426,7 +1422,6 @@ Config::getOptionValue(OptionID id, OptionValue value)
 		id == kOptionScreenSwitchNeedsShift ||
 		id == kOptionScreenSwitchNeedsControl ||
 		id == kOptionScreenSwitchNeedsAlt ||
-		id == kOptionScreenSaverSync ||
 		id == kOptionXTestXineramaUnaware ||
 		id == kOptionRelativeMouseMoves ||
 		id == kOptionWin32KeepForeground ||
@@ -1755,24 +1750,25 @@ Config::Cell::operator==(const Cell& x) const
 	if (m_neighbors.size() != x.m_neighbors.size()) {
 		return false;
 	}
-	for (EdgeLinks::const_iterator index1 = m_neighbors.begin(),
-								index2 = x.m_neighbors.begin();
-								index1 != m_neighbors.end();
-								++index1, ++index2) {
-		if (index1->first != index2->first) {
+
+	auto index2neighbors = x.m_neighbors.cbegin();
+	for (auto const &index1: m_neighbors) {
+		if (index1.first != index2neighbors->first) {
 			return false;
 		}
-		if (index1->second != index2->second) {
+		if (index1.second != index2neighbors->second) {
 			return false;
 		}
 
 		// operator== doesn't compare names.  only compare destination
 		// names.
-		if (!CaselessCmp::equal(index1->second.getName(),
-								index2->second.getName())) {
+		if (!CaselessCmp::equal(index1.second.getName(),
+								index2neighbors->second.getName())) {
 			return false;
 		}
+		++index2neighbors;
 	}
+
 	return true;
 }
 

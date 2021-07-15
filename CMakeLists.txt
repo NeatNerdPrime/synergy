@@ -17,16 +17,22 @@
 cmake_minimum_required (VERSION 3.4)
 project (synergy-core C CXX)
 
-option (SYNERGY_BUILD_LEGACY_GUI "Build the legacy GUI" ON)
-option (SYNERGY_BUILD_LEGACY_SERVICE "Build the legacy service (synergyd)" ON)
-option (SYNERGY_BUILD_LEGACY_INSTALLER "Build the legacy installer" ON)
+if (DEFINED ENV{SYNERGY_NO_LEGACY})
+    option (SYNERGY_BUILD_LEGACY_GUI "Build the legacy GUI" OFF)
+    option (SYNERGY_BUILD_LEGACY_SERVICE "Build the legacy service (synergyd)" OFF)
+    option (SYNERGY_BUILD_LEGACY_INSTALLER "Build the legacy installer" OFF)
+else()
+    option (SYNERGY_BUILD_LEGACY_GUI "Build the legacy GUI" ON)
+    option (SYNERGY_BUILD_LEGACY_SERVICE "Build the legacy service (synergyd)" ON)
+    option (SYNERGY_BUILD_LEGACY_INSTALLER "Build the legacy installer" ON)
+endif()
 option (BUILD_TESTS "Override building of tests" ON)
 option (ENABLE_COVERAGE "Build with coverage")
 
-if (DEFINED ENV{SYNERGY_ENTERPRISE})
-  option (SYNERGY_ENTERPRISE "Build Enterprise" ON)
+if ($ENV{SYNERGY_ENTERPRISE})
+    option (SYNERGY_ENTERPRISE "Build Enterprise" ON)
 else()
-  option (SYNERGY_ENTERPRISE "Build Enterprise" OFF)
+    option (SYNERGY_ENTERPRISE "Build Enterprise" OFF)
 endif()
 
 set (CMAKE_CXX_STANDARD 14)
@@ -156,6 +162,21 @@ if (UNIX)
     if (APPLE)
         set (CMAKE_CXX_FLAGS "--sysroot ${CMAKE_OSX_SYSROOT} ${CMAKE_CXX_FLAGS} -DGTEST_USE_OWN_TR1_TUPLE=1")
 
+        if(NOT CMAKE_OSX_DEPLOYMENT_TARGET)
+            set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0)
+        endif()
+
+        if(CMAKE_OSX_DEPLOYMENT_TARGET GREATER_EQUAL 11.0)
+            set(SYNERGY_OSX_DEPLOYMENT_TARGET 1100)
+        elseif(CMAKE_OSX_DEPLOYMENT_TARGET GREATER_EQUAL 10.15)
+            set(SYNERGY_OSX_DEPLOYMENT_TARGET 1015)
+        elseif(CMAKE_OSX_DEPLOYMENT_TARGET GREATER_EQUAL 10.14)
+            set(SYNERGY_OSX_DEPLOYMENT_TARGET 1014)
+        else()
+            set(SYNERGY_OSX_DEPLOYMENT_TARGET 1013)
+        endif()
+        add_compile_definitions(OSX_DEPLOYMENT_TARGET=${SYNERGY_OSX_DEPLOYMENT_TARGET})
+
         find_library (lib_ScreenSaver ScreenSaver)
         find_library (lib_IOKit IOKit)
         find_library (lib_ApplicationServices ApplicationServices)
@@ -169,6 +190,13 @@ if (UNIX)
             ${lib_Foundation}
             ${lib_Carbon}
         )
+
+        if(SYNERGY_OSX_DEPLOYMENT_TARGET GREATER_EQUAL 1014)
+            find_library (lib_UserNotifications UserNotifications)
+            list (APPEND libs
+                ${lib_UserNotifications}
+            )
+        endif()
 
     else() # not-apple
 
@@ -248,15 +276,7 @@ if (UNIX)
             list (APPEND libs Xi)
         endif()
 
-       if (NOT SYNERGY_ENTERPRISE)
-          set (DnsSdlib "dns_sd.h")
-          set (CMAKE_EXTRA_INCLUDE_FILES "${CMAKE_EXTRA_INCLUDE_FILES};${DnsSdlib}")
-          check_include_files ("${DnsSdlib}" HAVE_DNS_SD)
-          if (NOT HAVE_DNS_SD)
-            message (FATAL_ERROR "Missing header: " ${DnsSdlib})
-         endif()
-       endif()
-   endif()
+    endif()
 
     # For config.h, set some static values; it may be a good idea to make
     # these values dynamic for non-standard UNIX compilers.
@@ -303,31 +323,13 @@ endif()
 #
 # OpenSSL
 #
-if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    set (OPENSSL_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/ext/openssl/windows)
-    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-        set (OPENSSL_ROOT "${OPENSSL_ROOT}/x64")
-    else()
-        set (OPENSSL_ROOT "${OPENSSL_ROOT}/x86")
-    endif()
-
-    include_directories (BEFORE SYSTEM ${OPENSSL_ROOT}/include)
-    set (OPENSSL_LIBS
-        ${OPENSSL_ROOT}/lib/libssl.lib
-        ${OPENSSL_ROOT}/lib/libcrypto.lib
-    )
-elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set (OPENSSL_ROOT /usr/local/opt/openssl)
-    include_directories (BEFORE SYSTEM ${OPENSSL_ROOT}/include)
-    set (OPENSSL_LIBS
-        ${OPENSSL_ROOT}/lib/libssl.a
-        ${OPENSSL_ROOT}/lib/libcrypto.a
-    )
-elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux|.*BSD|DragonFly")
-    set (OPENSSL_LIBS ssl crypto)
-else()
-    message (FATAL_ERROR "Couldn't find OpenSSL")
+# Apple has to use static libraries because
+# "Use of the Apple-provided OpenSSL libraries by apps is strongly discouraged."
+# https://developer.apple.com/library/archive/documentation/Security/Conceptual/cryptoservices/SecureNetworkCommunicationAPIs/SecureNetworkCommunicationAPIs.html
+if(APPLE)
+    set(OPENSSL_USE_STATIC_LIBS TRUE)
 endif()
+find_package(OpenSSL REQUIRED)
 
 #
 # Check submodules
@@ -335,23 +337,23 @@ endif()
 find_package(Git QUIET)
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 # Update submodules as needed
-  option(GIT_SUBMODULE "Check submodules during build" ON)
-  if(GIT_SUBMODULE)
-    message(STATUS "Submodule update")
-    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-      RESULT_VARIABLE GIT_SUBMOD_RESULT)
-    if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-      message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+    option(GIT_SUBMODULE "Check submodules during build" ON)
+    if(GIT_SUBMODULE)
+        message(STATUS "Submodule update")
+        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        RESULT_VARIABLE GIT_SUBMOD_RESULT)
+        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+            message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+        endif()
     endif()
-  endif()
 endif()
 
 #
 # Google Test
 #
 if(BUILD_TESTS AND NOT EXISTS "${PROJECT_SOURCE_DIR}/ext/googletest/CMakeLists.txt")
-  message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
+    message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
 
@@ -386,19 +388,21 @@ macro (configure_files srcDir destDir)
 endmacro (configure_files)
 
 macro(generate_versionfile)
-	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR ${CMAKE_SYSTEM_NAME} MATCHES "Linux|.*BSD|DragonFly")
-		FILE(WRITE ${CMAKE_BINARY_DIR}/version
-		"export SYNERGY_VERSION_MAJOR=\"${SYNERGY_VERSION_MAJOR}\"\n"
-		"export SYNERGY_VERSION_MINOR=\"${SYNERGY_VERSION_MINOR}\"\n"
-		"export SYNERGY_VERSION_PATCH=\"${SYNERGY_VERSION_PATCH}\"\n"
-		"export SYNERGY_VERSION_STAGE=\"${SYNERGY_VERSION_STAGE}\"\n")
-	elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-		FILE(WRITE ${CMAKE_BINARY_DIR}/version.bat
-		"SET SYNERGY_VERSION_MAJOR=${SYNERGY_VERSION_MAJOR}\n"
-		"SET SYNERGY_VERSION_MINOR=${SYNERGY_VERSION_MINOR}\n"
-		"SET SYNERGY_VERSION_PATCH=${SYNERGY_VERSION_PATCH}\n"
-		"SET SYNERGY_VERSION_STAGE=${SYNERGY_VERSION_STAGE}\n")
-	endif()
+    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR ${CMAKE_SYSTEM_NAME} MATCHES "Linux|.*BSD|DragonFly")
+        FILE(WRITE ${CMAKE_BINARY_DIR}/version
+        "export SYNERGY_VERSION_MAJOR=\"${SYNERGY_VERSION_MAJOR}\"\n"
+        "export SYNERGY_VERSION_MINOR=\"${SYNERGY_VERSION_MINOR}\"\n"
+        "export SYNERGY_VERSION_PATCH=\"${SYNERGY_VERSION_PATCH}\"\n"
+        "export SYNERGY_VERSION_BUILD=\"${SYNERGY_VERSION_BUILD}\"\n"
+        "export SYNERGY_VERSION_STAGE=\"${SYNERGY_VERSION_STAGE}\"\n")
+    elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+        FILE(WRITE ${CMAKE_BINARY_DIR}/version.bat
+        "SET SYNERGY_VERSION_MAJOR=${SYNERGY_VERSION_MAJOR}\n"
+        "SET SYNERGY_VERSION_MINOR=${SYNERGY_VERSION_MINOR}\n"
+        "SET SYNERGY_VERSION_PATCH=${SYNERGY_VERSION_PATCH}\n"
+        "SET SYNERGY_VERSION_BUILD=${SYNERGY_VERSION_BUILD}\n"
+        "SET SYNERGY_VERSION_STAGE=${SYNERGY_VERSION_STAGE}\n")
+    endif()
 endmacro(generate_versionfile)
 
 
@@ -413,7 +417,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set (SYNERGY_BUNDLE_APP_DIR ${SYNERGY_BUNDLE_DIR}/Synergy.app)
     set (SYNERGY_BUNDLE_BINARY_DIR ${SYNERGY_BUNDLE_APP_DIR}/Contents/MacOS)
 
-	generate_versionfile()
+    generate_versionfile()
     configure_files (${SYNERGY_BUNDLE_SOURCE_DIR} ${SYNERGY_BUNDLE_DIR})
 endif()
 
@@ -422,8 +426,8 @@ endif()
 #
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         message (STATUS "Configuring the v1 installer")
-		generate_versionfile()
-		set(QT_PATH $ENV{CMAKE_PREFIX_PATH})
+        generate_versionfile()
+        set(QT_PATH $ENV{CMAKE_PREFIX_PATH})
         configure_files (${CMAKE_CURRENT_SOURCE_DIR}/dist/wix ${CMAKE_BINARY_DIR}/installer)
 endif()
 
@@ -438,7 +442,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux|.*BSD|DragonFly")
     else()
         install(FILES res/synergy.desktop DESTINATION share/applications)
     endif()
-	generate_versionfile()
+    generate_versionfile()
 endif()
 
 else()

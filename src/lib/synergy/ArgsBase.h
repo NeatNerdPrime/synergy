@@ -40,7 +40,6 @@ namespace lib {
             Type                 m_classType         = kBase;      /// @brief Stores what type of object this is
 
             bool                 m_daemon            = true;       /// @brief Should run as a daemon
-            bool                 m_backend           = false;      /// @brief //TODO Unsure what this is used for
             bool                 m_restartable       = true;       /// @brief Should the app restart automatically
             bool                 m_noHooks           = false;      /// @brief Should the app use hooks
             const char*          m_pname             = nullptr;    /// @brief The filename of the running process
@@ -58,6 +57,8 @@ namespace lib {
             String               m_profileDirectory;               /// @brief The profile DIR to use for the application
             String               m_pluginDirectory;                /// @brief //TODO Plugins? Get set in ARCH but doesn't seem to get used
             String               m_tlsCertFile;                    /// @brief Contains the location of the TLS certificate file
+            bool                 m_enableLangSync = true;          /// @brief Should keyboard input be in same language as on server
+            bool                 m_preventSleep = false;           /// @brief Stop this computer from sleeping
 
 #if SYSAPI_WIN32
             bool                 m_debugServiceWait  = false;

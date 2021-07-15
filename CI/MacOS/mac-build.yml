@@ -4,46 +4,66 @@ steps:
       certSecureFile: 'AppleSigningCert.cer'
       certPwd: '$(AppleCertPass)'
       keychain: 'temp'
-    condition: eq(variables['Build.Reason'], 'Manual')
 
   - task: CmdLine@2
     inputs:
-      script: 'brew install qt'
+      script: | 
+        python3 CI/build_version.py
+    displayName: 'Update Version.cmake'
+
+  - task: CmdLine@2
+    inputs:
+      script: | 
+        python3 -m pip install dmgbuild
+        python3 -m pip install aqtinstall==0.11.1
+    displayName: 'Installing utilities'
+
+  - task: CmdLine@2
+    inputs:
+      script: |
+        python3 -m aqt install $(QT_VERSION) mac desktop -O $(QT_PATH)
     displayName: 'Installing QT'
 
   - task: CmdLine@2
     inputs:
-      script: 'pip install dmgbuild'
-    displayName: 'Installing dmgbuild'
-
-  - task: CmdLine@2
-    inputs:
       script: |
-        export PATH="$(QT_PATH):$PATH"
+        export PATH="$(Qt5_DIR)/bin:$PATH"
         mkdir build
         cd build
-        cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=$(version) -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release ..
+        cmake \
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=$(version) \
+          -DCMAKE_OSX_ARCHITECTURES=x86_64 \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_CONFIGURATION_TYPES=Release ..
     displayName: 'Cmake standard'
     condition: eq(variables['buildType'], 'standard')
     env:
       GIT_COMMIT: $(Build.SourceVersion)
+      CMAKE_PREFIX_PATH: "$(Qt5_DIR);/usr/local/opt/openssl"
 
   - task: CmdLine@2
     inputs:
       script: |
-        export PATH="$(QT_PATH):$PATH"
+        export PATH="$(Qt5_DIR)/bin:$PATH"
         export SYNERGY_ENTERPRISE=1
         mkdir build
         cd build
-        cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES=Release -DSYNERGY_ENTERPRISE=ON ..
+        cmake \
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=$(version) \
+          -DCMAKE_OSX_ARCHITECTURES=x86_64 \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_CONFIGURATION_TYPES=Release \
+          -DSYNERGY_ENTERPRISE=ON ..
     displayName: 'Cmake enterprise'
     condition: eq(variables['buildType'], 'enterprise')
     env:
       GIT_COMMIT: $(Build.SourceVersion)
+      CMAKE_PREFIX_PATH: "$(Qt5_DIR);/usr/local/opt/openssl"
 
   - task: CmdLine@2
     inputs:
       script: |
+        export PATH="$(Qt5_DIR)/bin:$PATH"
         cd build
         . ./version
         make -j
@@ -55,28 +75,27 @@ steps:
   - task: CmdLine@2
     inputs:
       script: |
-        export PATH="$(QT_PATH):$PATH"
+        export PATH="$(Qt5_DIR)/bin:$PATH"
         macdeployqt $(Build.Repository.LocalPath)/build/bundle/Synergy.app -codesign="$CODESIGN_ID"
         codesign -f --options runtime --deep -s "$CODESIGN_ID" $(Build.Repository.LocalPath)/build/bundle/Synergy.app
         ln -s /Applications $(Build.Repository.LocalPath)/build/bundle/Applications
     displayName: 'Signing'
     env:
       CODESIGN_ID: "Developer ID Application: Symless Ltd (4HX897Y6GJ)"
-    condition: eq(variables['Build.Reason'], 'Manual')
 
   - script: |
       . ./build/version
       SYNERGY_VERSION="$SYNERGY_VERSION_MAJOR.$SYNERGY_VERSION_MINOR.$SYNERGY_VERSION_PATCH"
       SYNERGY_REVISION=`git rev-parse --short=8 HEAD`
-      SYNERGY_DMG_VERSION="${SYNERGY_VERSION}-${SYNERGY_VERSION_STAGE}_b$(Build.BuildNumber)-${SYNERGY_REVISION}"
-      SYNERGY_DMG_FILENAME=$(prefix)_v${SYNERGY_DMG_VERSION}_macos_$(name).dmg
+      SYNERGY_DMG_VERSION="${SYNERGY_VERSION}-${SYNERGY_VERSION_STAGE}.${SYNERGY_REVISION}"
+      SYNERGY_DMG_FILENAME=$(prefix)_${SYNERGY_DMG_VERSION}_macos_$(platform).dmg
       echo "##vso[task.setvariable variable=SYNERGY_VERSION_STAGE]${SYNERGY_VERSION_STAGE}"
+      echo "##vso[task.setvariable variable=SYNERGY_VERSION_BUILD]${SYNERGY_VERSION_BUILD}"
       echo "##vso[task.setvariable variable=SYNERGY_VERSION]${SYNERGY_VERSION}"
       echo "##vso[task.setvariable variable=SYNERGY_REVISION]${SYNERGY_REVISION}"
       echo "##vso[task.setvariable variable=SYNERGY_DMG_VERSION]${SYNERGY_DMG_VERSION}"
       echo "##vso[task.setvariable variable=SYNERGY_DMG_FILENAME]${SYNERGY_DMG_FILENAME}"
     displayName: "Setup variables"
-    condition: eq(variables['Build.Reason'], 'Manual')
 
   - task: CmdLine@2
     inputs:
@@ -84,7 +103,7 @@ steps:
         dmgbuild \
           -s CI/MacOS/installator_settings.py \
           -D app=$(Build.Repository.LocalPath)/build/bundle/Synergy.app \
-          -D background=$(Build.Repository.LocalPath)/build/bundle/Synergy.app/Contents/Resources/installer_background.png \
+          -D background=$(Build.Repository.LocalPath)/build/bundle/Synergy.app/Contents/Resources/.installer_background.tiff \
           "Synergy" \
           $(SYNERGY_DMG_FILENAME)
         mkdir pkg
@@ -94,7 +113,6 @@ steps:
         shasum $(SYNERGY_DMG_FILENAME) >> $(SYNERGY_DMG_FILENAME).checksum.txt
         shasum -a 256 $(SYNERGY_DMG_FILENAME) >> $(SYNERGY_DMG_FILENAME).checksum.txt
     displayName: 'Create Installer'
-    condition: eq(variables['Build.Reason'], 'Manual')
 
   - task: Bash@3
     inputs:
@@ -104,14 +122,12 @@ steps:
       ASC_USERNAME: $(ASC_USERNAME)
       NOTORY_APP_PASSWORD: $(NOTORY_APP_PASSWORD)
     displayName: 'Submit for Notarization'
-    condition: eq(variables['Build.Reason'], 'Manual')
 
   - task: CopyFilesOverSSH@0
     inputs:
       sshEndpoint: 'Azure on Sandor'
       sourceFolder: '$(Build.Repository.LocalPath)/pkg'
       contents: '*'
-      targetFolder: 'synergy-core/v1-core-$(buildType)/$(SYNERGY_VERSION)/$(SYNERGY_VERSION_STAGE)/$(SYNERGY_REVISION)/'
+      targetFolder: 'synergy-core/v1-core-$(buildType)/$(SYNERGY_VERSION)/$(SYNERGY_VERSION_STAGE)/b$(SYNERGY_VERSION_BUILD)-$(SYNERGY_REVISION)/'
       readyTimeout: '20000'
     displayName: 'Send Package to sandor'
-    condition: eq(variables['Build.Reason'], 'Manual')

@@ -35,17 +35,6 @@
 #include <fcntl.h>
 #include <cstring>
 
-#if HAVE_POLL
-#    include <poll.h>
-#else
-#    if HAVE_SYS_SELECT_H
-#        include <sys/select.h>
-#    endif
-#    if HAVE_SYS_TIME_H
-#        include <sys/time.h>
-#    endif
-#endif
-
 #if !HAVE_INET_ATON
 #    include <stdio.h>
 #endif
@@ -87,12 +76,14 @@ inet_aton(const char* cp, struct in_addr* inp)
 // ArchNetworkBSD
 //
 
+ArchNetworkBSD::Connectors ArchNetworkBSD::s_connectors;
+
 ArchNetworkBSD::ArchNetworkBSD()
 = default;
 
 ArchNetworkBSD::~ArchNetworkBSD()
 {
-    ARCH->closeMutex(m_mutex);
+    if (m_mutex) ARCH->closeMutex(m_mutex);
 }
 
 void
@@ -321,7 +312,7 @@ ArchNetworkBSD::pollSocket(PollEntry pe[], int num, double timeout)
     int t = (timeout < 0.0) ? -1 : static_cast<int>(1000.0 * timeout);
 
     // do the poll
-    n = poll(pfd, n, t);
+    n = s_connectors.poll_impl(pfd, n, t);
 
     // reset the unblock pipe
     if (n > 0 && unblockPipe != nullptr && (pfd[num].revents & POLLIN) != 0) {
@@ -347,6 +338,7 @@ ArchNetworkBSD::pollSocket(PollEntry pe[], int num, double timeout)
         }
         delete[] pfd;
         throwError(errno);
+        return -1;
     }
 
     // translate back
@@ -678,38 +670,55 @@ ArchNetworkBSD::copyAddr(ArchNetAddress addr)
     return new ArchNetAddressImpl(*addr);
 }
 
-ArchNetAddress
+std::vector<ArchNetAddress>
 ArchNetworkBSD::nameToAddr(const std::string& name)
 {
     // allocate address
-    auto* addr = new ArchNetAddressImpl;
+    std::vector<ArchNetAddressImpl*> addresses;
 
     char ipstr[INET6_ADDRSTRLEN];
     struct addrinfo hints;
-    struct addrinfo *p;
+    struct addrinfo *pResult;
+    struct in6_addr serveraddr;
     int ret;
 
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC;
+    hints.ai_flags    = AI_NUMERICSERV;
+    hints.ai_family   = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+
+    if (inet_pton(AF_INET, name.c_str(), &serveraddr) == 1) {
+        hints.ai_family = AF_INET;
+        hints.ai_flags |= AI_NUMERICHOST;
+    }
+    else if (inet_pton(AF_INET6, name.c_str(), &serveraddr) == 1) {
+        hints.ai_family = AF_INET6;
+        hints.ai_flags |= AI_NUMERICHOST;
+    }
 
     // done with static buffer
     ARCH->lockMutex(m_mutex);
-    if ((ret = getaddrinfo(name.c_str(), NULL, &hints, &p)) != 0) {
+    ret = getaddrinfo(name.c_str(), nullptr, &hints, &pResult);
+    if (ret != 0) {
         ARCH->unlockMutex(m_mutex);
-        delete addr;
         throwNameError(ret);
     }
 
-    if (p->ai_family == AF_INET) {
-        addr->m_len = (socklen_t)sizeof(struct sockaddr_in);
-    } else {
-        addr->m_len = (socklen_t)sizeof(struct sockaddr_in6);
+    for(; pResult != nullptr; pResult = pResult->ai_next ) {
+        addresses.push_back(new ArchNetAddressImpl);
+        if (pResult->ai_family == AF_INET) {
+            addresses.back()->m_len = (socklen_t)sizeof(struct sockaddr_in);
+        } else {
+            addresses.back()->m_len = (socklen_t)sizeof(struct sockaddr_in6);
+        }
+
+        memcpy(&addresses.back()->m_addr, pResult->ai_addr, addresses.back()->m_len);
     }
-    memcpy(&addr->m_addr, p->ai_addr, addr->m_len);
-    freeaddrinfo(p);
+
+    freeaddrinfo(pResult);
     ARCH->unlockMutex(m_mutex);
 
-    return addr;
+    return addresses;
 }
 
 void
@@ -849,8 +858,8 @@ ArchNetworkBSD::isAnyAddr(ArchNetAddress addr)
 
     case kINET6: {
         struct sockaddr_in6* ipAddr = TYPED_ADDR(struct sockaddr_in6, addr);
-        return (memcmp(&ipAddr->sin6_addr, &in6addr_any, sizeof(in6addr_any)) == 0 &&
-                addr->m_len == (socklen_t)sizeof(struct sockaddr_in6));
+        return (addr->m_len == (socklen_t)sizeof(struct sockaddr_in6) &&
+            memcmp(static_cast<const void*>(&ipAddr->sin6_addr), static_cast<const void*>(&in6addr_any), sizeof(in6_addr)) == 0);
     }
 
     default:

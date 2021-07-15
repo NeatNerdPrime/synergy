@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "synergy/App.h"
+#include "synergy/ArgsBase.h"
 #include "synergy/KeyMap.h"
 #include "synergy/key_types.h"
 #include "base/Log.h"
@@ -610,6 +612,8 @@ KeyMap::mapCharacterKey(Keystrokes& keys, KeyID id, SInt32 group,
     if (i == m_keyIDMap.end()) {
         // unknown key
         LOG((CLOG_DEBUG1 "key %04x is not on keyboard", id));
+
+
         return NULL;
     }
     const KeyGroupTable& keyGroupTable = i->second;
@@ -761,7 +765,9 @@ KeyMap::keysForKeyItem(const KeyItem& keyItem, SInt32& group,
         KeyModifierAltGr | KeyModifierNumLock | KeyModifierScrollLock;
 
     // add keystrokes to adjust the group
-    if (group != keyItem.m_group) {
+
+    if (App::instance().argsBase().m_enableLangSync &&
+            group != keyItem.m_group) {
         group = keyItem.m_group;
         keystrokes.push_back(Keystroke(group, true, false));
     }
@@ -896,7 +902,8 @@ KeyMap::keysForModifierState(KeyButton button, SInt32 group,
     // we'll assume that modifiers with higher bits are affected by modifiers
     // with lower bits.  there's not much basis for that assumption except
     // that we're pretty sure shift isn't changed by other modifiers.
-    for (SInt32 bit = kKeyModifierNumBits; bit-- > 0; ) {
+    SInt32 bit = kKeyModifierNumBits;
+    while (bit-- > 0) {
         KeyModifierMask mask = (1u << bit);
         if ((flipMask & mask) == 0) {
             // modifier is already correct
@@ -1326,20 +1333,20 @@ KeyMap::KeyItem::operator==(const KeyItem& x) const
 
 KeyMap::Keystroke::Keystroke(KeyButton button,
                 bool press, bool repeat, UInt32 data) :
-    m_type(kButton)
+    m_type(kButton), m_data{}
 {
     m_data.m_button.m_button = button;
-    m_data.m_button.m_press  = press;
+    m_data.m_button.m_press = press;
     m_data.m_button.m_repeat = repeat;
     m_data.m_button.m_client = data;
 }
 
 KeyMap::Keystroke::Keystroke(SInt32 group, bool absolute, bool restore) :
-    m_type(kGroup)
+    m_type(kGroup), m_data{}
 {
-    m_data.m_group.m_group    = group;
+    m_data.m_group.m_group = group;
     m_data.m_group.m_absolute = absolute;
-    m_data.m_group.m_restore  = restore;
+    m_data.m_group.m_restore = restore;
 }
 
 }

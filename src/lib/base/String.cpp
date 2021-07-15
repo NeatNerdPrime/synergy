@@ -53,7 +53,8 @@ vformat(const char* fmt, va_list args)
     std::vector<size_t> width;
     std::vector<size_t> index;
     size_t maxIndex = 0;
-    for (const char* scan = fmt; *scan != '\0'; ++scan) {
+    const char* scan = fmt;
+    while ( *scan ) {
         if (*scan == '%') {
             ++scan;
             if (*scan == '\0') {
@@ -88,6 +89,7 @@ vformat(const char* fmt, va_list args)
                 // improper escape -- ignore
             }
         }
+        ++scan;
     }
 
     // get args
@@ -97,13 +99,13 @@ vformat(const char* fmt, va_list args)
     length.push_back(1);
     for (int i = 0; i < maxIndex; ++i) {
         const char* arg = va_arg(args, const char*);
-        size_t len = strlen(arg);
+        size_t len = strnlen(arg, SIZE_MAX);
         value.push_back(arg);
         length.push_back(len);
     }
 
     // compute final length
-    size_t resultLength = strlen(fmt);
+    size_t resultLength = strlen(fmt); // Compliant: we made sure that fmt variable ended with null(in while loop higher)
     const int n = static_cast<int>(pos.size());
     for (int i = 0; i < n; ++i) {
         resultLength -= width[i];
