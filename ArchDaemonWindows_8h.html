@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Deskflow<span id="projectnumber">&#160;1.8.4.3523</span>
+   <div id="projectname">Deskflow<span id="projectnumber">&#160;1.8.4.3527</span>
    </div>
    <div id="projectbrief">Keyboard and mouse sharing utility</div>
   </td>
@@ -97,7 +97,7 @@ $(function(){initNavTree('ArchDaemonWindows_8h.html','',''); });
 <code>#include &lt;Windows.h&gt;</code><br />
 <code>#include &lt;tchar.h&gt;</code><br />
 <code>#include &lt;functional&gt;</code><br />
-<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;QString&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for ArchDaemonWindows.h:</div>
 <div class="dyncontent">
@@ -106,18 +106,18 @@ Include dependency graph for ArchDaemonWindows.h:</div>
 <area shape="rect" title=" " alt="" coords="177,5,342,44"/>
 <area shape="rect" href="IArchDaemon_8h.html" title=" " alt="" coords="24,92,165,117"/>
 <area shape="poly" title=" " alt="" coords="221,47,134,87,132,83,219,42"/>
-<area shape="rect" title=" " alt="" coords="6,165,84,189"/>
-<area shape="poly" title=" " alt="" coords="177,40,78,61,38,76,14,94,9,107,10,122,27,152,22,154,5,123,3,106,10,90,36,71,77,56,176,35"/>
-<area shape="rect" title=" " alt="" coords="117,165,170,189"/>
-<area shape="poly" title=" " alt="" coords="248,46,164,154,160,150,243,43"/>
+<area shape="rect" title=" " alt="" coords="11,165,76,189"/>
+<area shape="poly" title=" " alt="" coords="177,40,79,61,38,76,14,94,9,107,10,122,26,151,21,154,5,123,3,106,10,90,36,71,77,56,176,35"/>
+<area shape="rect" title=" " alt="" coords="106,165,184,189"/>
+<area shape="poly" title=" " alt="" coords="248,46,165,154,161,150,244,43"/>
 <area shape="rect" href="IArchMultithread_8h.html" title=" " alt="" coords="240,92,397,117"/>
 <area shape="poly" title=" " alt="" coords="276,43,303,78,298,81,272,46"/>
 <area shape="rect" title=" " alt="" coords="421,92,507,117"/>
 <area shape="poly" title=" " alt="" coords="310,42,420,84,418,89,308,47"/>
 <area shape="rect" title=" " alt="" coords="530,92,592,117"/>
-<area shape="poly" title=" " alt="" coords="333,42,516,89,514,94,332,47"/>
-<area shape="poly" title=" " alt="" coords="88,119,64,153,60,150,84,116"/>
-<area shape="poly" title=" " alt="" coords="105,116,129,150,125,153,100,119"/>
+<area shape="poly" title=" " alt="" coords="333,42,516,89,515,94,332,47"/>
+<area shape="poly" title=" " alt="" coords="88,119,63,154,59,151,84,116"/>
+<area shape="poly" title=" " alt="" coords="105,116,130,151,126,154,101,119"/>
 <area shape="rect" title=" " alt="" coords="288,165,349,189"/>
 <area shape="poly" title=" " alt="" coords="321,117,321,149,316,149,316,117"/>
 </map>
@@ -146,9 +146,6 @@ Classes</h2></td></tr>
 Macros</h2></td></tr>
 <tr class="memitem:ac7bef5d85e3dcd73eef56ad39ffc84a9" id="r_ac7bef5d85e3dcd73eef56ad39ffc84a9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac7bef5d85e3dcd73eef56ad39ffc84a9">WIN32_LEAN_AND_MEAN</a></td></tr>
 <tr class="memitem:a99414cdb74167761d0f444afd670538f" id="r_a99414cdb74167761d0f444afd670538f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a99414cdb74167761d0f444afd670538f">ARCH_DAEMON</a>&#160;&#160;&#160;<a class="el" href="classArchDaemonWindows.html">ArchDaemonWindows</a></td></tr>
-<tr class="memitem:a5f5c0ad9e180758e94dc58402375a1ac" id="r_a5f5c0ad9e180758e94dc58402375a1ac"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5f5c0ad9e180758e94dc58402375a1ac">DEFAULT_DAEMON_INFO</a>&#160;&#160;&#160;_T(&quot;Runs the Core process on secure desktops (UAC prompts, login screen, etc).&quot;)</td></tr>
-<tr class="memitem:a1c715c8a946e494243046e4a0ddff06f" id="r_a1c715c8a946e494243046e4a0ddff06f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1c715c8a946e494243046e4a0ddff06f">LEGACY_SERVER_DAEMON_NAME</a>&#160;&#160;&#160;_T(&quot;Deskflow Server&quot;)</td></tr>
-<tr class="memitem:ab8232800a094ca5686bf36f5be537bbf" id="r_ab8232800a094ca5686bf36f5be537bbf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab8232800a094ca5686bf36f5be537bbf">LEGACY_CLIENT_DAEMON_NAME</a>&#160;&#160;&#160;_T(&quot;Deskflow Client&quot;)</td></tr>
 </table>
 <a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
 <a id="a99414cdb74167761d0f444afd670538f" name="a99414cdb74167761d0f444afd670538f"></a>
@@ -159,48 +156,6 @@ Macros</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">#define ARCH_DAEMON&#160;&#160;&#160;<a class="el" href="classArchDaemonWindows.html">ArchDaemonWindows</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a5f5c0ad9e180758e94dc58402375a1ac" name="a5f5c0ad9e180758e94dc58402375a1ac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5f5c0ad9e180758e94dc58402375a1ac">&#9670;&#160;</a></span>DEFAULT_DAEMON_INFO</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define DEFAULT_DAEMON_INFO&#160;&#160;&#160;_T(&quot;Runs the Core process on secure desktops (UAC prompts, login screen, etc).&quot;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ab8232800a094ca5686bf36f5be537bbf" name="ab8232800a094ca5686bf36f5be537bbf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab8232800a094ca5686bf36f5be537bbf">&#9670;&#160;</a></span>LEGACY_CLIENT_DAEMON_NAME</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define LEGACY_CLIENT_DAEMON_NAME&#160;&#160;&#160;_T(&quot;Deskflow Client&quot;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a1c715c8a946e494243046e4a0ddff06f" name="a1c715c8a946e494243046e4a0ddff06f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c715c8a946e494243046e4a0ddff06f">&#9670;&#160;</a></span>LEGACY_SERVER_DAEMON_NAME</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define LEGACY_SERVER_DAEMON_NAME&#160;&#160;&#160;_T(&quot;Deskflow Server&quot;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
