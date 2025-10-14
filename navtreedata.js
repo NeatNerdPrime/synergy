@@ -148,8 +148,8 @@ var NAVTREEINDEX =
 "classdeskflow_1_1platform_1_1MSWindowsProcess.html#a4cae0ccf5636bc438a7a05721d7bf5b1",
 "classvalidators_1_1IpAddressValidator.html",
 "group__protocol__errors.html#gaa968fb3f8a1086ec79204b0c75041403",
-"pages.html",
-"structdeskflow_1_1client_1_1HelloBack_1_1Deps.html#a0abd446ad8d12ee80b156801fcf9f0b8"
+"protocolScreenSaverControl-p.html#a7512bdda9dc70c2d96a718c959f79b42",
+"structdeskflow_1_1client_1_1HelloBack_1_1Deps.html#aaabb2a7780b6e5ceecf70c5772a5fafa"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';
