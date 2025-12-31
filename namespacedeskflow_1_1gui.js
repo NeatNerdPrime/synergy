@@ -17,6 +17,7 @@ var namespacedeskflow_1_1gui =
     [ "IServerConfig", "classdeskflow_1_1gui_1_1IServerConfig.html", "classdeskflow_1_1gui_1_1IServerConfig" ],
     [ "ClientConnection", "classdeskflow_1_1gui_1_1ClientConnection.html", "classdeskflow_1_1gui_1_1ClientConnection" ],
     [ "CoreProcess", "classdeskflow_1_1gui_1_1CoreProcess.html", "classdeskflow_1_1gui_1_1CoreProcess" ],
+    [ "NetworkMonitor", "classdeskflow_1_1gui_1_1NetworkMonitor.html", "classdeskflow_1_1gui_1_1NetworkMonitor" ],
     [ "ServerConnection", "classdeskflow_1_1gui_1_1ServerConnection.html", "classdeskflow_1_1gui_1_1ServerConnection" ],
     [ "ServerMessage", "classdeskflow_1_1gui_1_1ServerMessage.html", "classdeskflow_1_1gui_1_1ServerMessage" ],
     [ "FileTail", "classdeskflow_1_1gui_1_1FileTail.html", "classdeskflow_1_1gui_1_1FileTail" ],
@@ -25,12 +26,8 @@ var namespacedeskflow_1_1gui =
     [ "isDarkMode", "namespacedeskflow_1_1gui.html#aafd8747004a0dc462453e60e4602a918", null ],
     [ "printLine", "namespacedeskflow_1_1gui.html#a302e57e11bdb1ecd18afd06b9180ee7e", null ],
     [ "updateIconTheme", "namespacedeskflow_1_1gui.html#aaa991ba0f8b1c14f114fa29eb3fbdc4b", null ],
-    [ "kColorError", "namespacedeskflow_1_1gui.html#a898a7c122870d1fac5a4c991baa7ed4a", null ],
     [ "kDefaultProtocol", "namespacedeskflow_1_1gui.html#abcbdcbeeb5309fe706a35d40a3c1c719", null ],
     [ "kForceDebugMessages", "namespacedeskflow_1_1gui.html#a78e6dcd2ccaf9f1da1f4aa50905067ee", null ],
     [ "kLineSplitRegex", "namespacedeskflow_1_1gui.html#ac9ebe41f2673365ae4519947119c63c5", null ],
-    [ "kRetryDelay", "namespacedeskflow_1_1gui.html#a5b38d733ad00fd5d2681a25a8c30e6da", null ],
-    [ "kStyleErrorActiveLabel", "namespacedeskflow_1_1gui.html#add853f4c3c72f23fe1c6f86e129c614a", null ],
-    [ "kStyleErrorInactiveLabel", "namespacedeskflow_1_1gui.html#a29f48e82aa87d7acc4e2d56429d59f1b", null ],
-    [ "kStyleLineEditErrorBorder", "namespacedeskflow_1_1gui.html#a301c112caab5107b5846e4de036d3f1d", null ]
+    [ "kRetryDelay", "namespacedeskflow_1_1gui.html#a5b38d733ad00fd5d2681a25a8c30e6da", null ]
 ];
