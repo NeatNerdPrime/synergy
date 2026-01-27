@@ -1,5 +1,9 @@
 var NAVTREEINDEX4 =
 {
+"OSXKeyState_8cpp.html#ac05df8405182a5111d542557ce205c64":[7,0,1,1,9,65,10],
+"OSXKeyState_8cpp.html#af34dcd5e47f5657f1e06bbaf48684af5":[7,0,1,1,9,65,4],
+"OSXKeyState_8cpp.html#affd353771c5f441401e17230a26431c0":[7,0,1,1,9,65,1],
+"OSXKeyState_8h.html":[7,0,1,1,9,66],
 "OSXKeyState_8h_source.html":[7,0,1,1,9,66],
 "OSXMediaKeySupport_8h.html":[7,0,1,1,9,67],
 "OSXMediaKeySupport_8h.html#a3335d4beeebeaee57e9a206c10608cb0":[7,0,1,1,9,67,0],
@@ -194,7 +198,8 @@ var NAVTREEINDEX4 =
 "ServerApp_8h.html#aeee15ce451435cc7f2fdb211337d0694af704f57ea420275ad51bf55b7dec2c96":[7,0,1,1,4,54,1,0],
 "ServerApp_8h_source.html":[7,0,1,1,4,54],
 "ServerConfigDialog_8cpp.html":[7,0,1,1,5,2,10],
-"ServerConfigDialog_8cpp.html#a8998f4fde8b4d01dde07d3eccfbea73d":[7,0,1,1,5,2,10,0],
+"ServerConfigDialog_8cpp.html#a64645c414bdb6cc72fd76678220a628e":[7,0,1,1,5,2,10,0],
+"ServerConfigDialog_8cpp.html#a8998f4fde8b4d01dde07d3eccfbea73d":[7,0,1,1,5,2,10,1],
 "ServerConfigDialog_8h.html":[7,0,1,1,5,2,11],
 "ServerConfigDialog_8h_source.html":[7,0,1,1,5,2,11],
 "ServerConfig_8cpp.html":[7,0,1,1,5,0,7],
@@ -218,9 +223,9 @@ var NAVTREEINDEX4 =
 "ServerMessage_8cpp.html":[7,0,1,1,5,1,8],
 "ServerMessage_8h.html":[7,0,1,1,5,1,9],
 "ServerMessage_8h_source.html":[7,0,1,1,5,1,9],
-"ServerProxy_8cpp.html":[7,0,1,1,2,2],
-"ServerProxy_8h.html":[7,0,1,1,2,3],
-"ServerProxy_8h_source.html":[7,0,1,1,2,3],
+"ServerProxy_8cpp.html":[7,0,1,1,2,4],
+"ServerProxy_8h.html":[7,0,1,1,2,5],
+"ServerProxy_8h_source.html":[7,0,1,1,2,5],
 "Server_8cpp.html":[7,0,1,1,10,32],
 "Server_8h.html":[7,0,1,1,10,33],
 "Server_8h_source.html":[7,0,1,1,10,33],
@@ -244,10 +249,5 @@ var NAVTREEINDEX4 =
 "SpacesValidator_8h_source.html":[7,0,1,1,5,4,17],
 "SslLogger_8cpp.html":[7,0,1,1,8,23],
 "SslLogger_8h.html":[7,0,1,1,8,24],
-"SslLogger_8h_source.html":[7,0,1,1,8,24],
-"Stopwatch_8cpp.html":[7,0,1,1,1,26],
-"Stopwatch_8h.html":[7,0,1,1,1,27],
-"Stopwatch_8h_source.html":[7,0,1,1,1,27],
-"StreamBuffer_8cpp.html":[7,0,1,1,6,3],
-"StreamBuffer_8h.html":[7,0,1,1,6,4]
+"SslLogger_8h_source.html":[7,0,1,1,8,24]
 };
