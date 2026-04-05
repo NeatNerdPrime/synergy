@@ -1,6 +1,5 @@
 var NAVTREEINDEX11 =
 {
-"classKeySequence.html#a3922ee75c8ef490a9d6a56053c57e667":[6,0,139,3],
 "classKeySequence.html#a698579551c4f6c97e0cb584de244b5ff":[6,0,139,7],
 "classKeySequence.html#a6c8177d676c9608acfb03b90ef61df31":[6,0,139,0],
 "classKeySequence.html#a7b089f34b9ff2aa00efaba61fe005abd":[6,0,139,4],
@@ -95,6 +94,7 @@ var NAVTREEINDEX11 =
 "classLogWidget.html#a46782c113d9636b91dec16c178cd40ea":[6,0,145,1],
 "classLogWidget.html#aa9299a01d5164aac988df2a52721aa0e":[6,0,145,0],
 "classLogWidget.html#acae13034eeee9da0b4fb48f120956027":[6,0,145,3],
+"classLogWidget.html#af0846e295fa2eabafe81234cfa450133":[6,0,145,4],
 "classMSWindowsClipboard.html":[6,0,147],
 "classMSWindowsClipboard.html#a05e7bf2345789064f00ca591aa25a5da":[6,0,147,0],
 "classMSWindowsClipboard.html#a1bc83f8deef69d8032ffeebb86da5754":[6,0,147,6],
