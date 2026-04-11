@@ -3,7 +3,9 @@ var annotated_dup =
     [ "deskflow", "namespacedeskflow.html", [
       [ "core", "namespacedeskflow_1_1core.html", [
         [ "ipc", "namespacedeskflow_1_1core_1_1ipc.html", [
-          [ "DaemonIpcServer", "classdeskflow_1_1core_1_1ipc_1_1DaemonIpcServer.html", "classdeskflow_1_1core_1_1ipc_1_1DaemonIpcServer" ]
+          [ "CoreIpcServer", "classdeskflow_1_1core_1_1ipc_1_1CoreIpcServer.html", "classdeskflow_1_1core_1_1ipc_1_1CoreIpcServer" ],
+          [ "DaemonIpcServer", "classdeskflow_1_1core_1_1ipc_1_1DaemonIpcServer.html", "classdeskflow_1_1core_1_1ipc_1_1DaemonIpcServer" ],
+          [ "IpcServer", "classdeskflow_1_1core_1_1ipc_1_1IpcServer.html", "classdeskflow_1_1core_1_1ipc_1_1IpcServer" ]
         ] ]
       ] ],
       [ "string", "namespacedeskflow_1_1string.html", [
@@ -12,22 +14,17 @@ var annotated_dup =
       [ "platform", "namespacedeskflow_1_1platform.html", [
         [ "MSWindowsProcess", "classdeskflow_1_1platform_1_1MSWindowsProcess.html", "classdeskflow_1_1platform_1_1MSWindowsProcess" ]
       ] ],
-      [ "languages", "namespacedeskflow_1_1languages.html", [
-        [ "LanguageManager", "classdeskflow_1_1languages_1_1LanguageManager.html", "classdeskflow_1_1languages_1_1LanguageManager" ]
-      ] ],
       [ "gui", "namespacedeskflow_1_1gui.html", [
         [ "ipc", "namespacedeskflow_1_1gui_1_1ipc.html", [
-          [ "DaemonIpcClient", "classdeskflow_1_1gui_1_1ipc_1_1DaemonIpcClient.html", "classdeskflow_1_1gui_1_1ipc_1_1DaemonIpcClient" ]
+          [ "CoreIpcClient", "classdeskflow_1_1gui_1_1ipc_1_1CoreIpcClient.html", "classdeskflow_1_1gui_1_1ipc_1_1CoreIpcClient" ],
+          [ "DaemonIpcClient", "classdeskflow_1_1gui_1_1ipc_1_1DaemonIpcClient.html", "classdeskflow_1_1gui_1_1ipc_1_1DaemonIpcClient" ],
+          [ "IpcClient", "classdeskflow_1_1gui_1_1ipc_1_1IpcClient.html", "classdeskflow_1_1gui_1_1ipc_1_1IpcClient" ]
         ] ],
         [ "messages", "namespacedeskflow_1_1gui_1_1messages.html", [
           [ "Errors", "structdeskflow_1_1gui_1_1messages_1_1Errors.html", "structdeskflow_1_1gui_1_1messages_1_1Errors" ]
         ] ],
-        [ "IServerConfig", "classdeskflow_1_1gui_1_1IServerConfig.html", "classdeskflow_1_1gui_1_1IServerConfig" ],
-        [ "ClientConnection", "classdeskflow_1_1gui_1_1ClientConnection.html", "classdeskflow_1_1gui_1_1ClientConnection" ],
         [ "CoreProcess", "classdeskflow_1_1gui_1_1CoreProcess.html", "classdeskflow_1_1gui_1_1CoreProcess" ],
         [ "NetworkMonitor", "classdeskflow_1_1gui_1_1NetworkMonitor.html", "classdeskflow_1_1gui_1_1NetworkMonitor" ],
-        [ "ServerConnection", "classdeskflow_1_1gui_1_1ServerConnection.html", "classdeskflow_1_1gui_1_1ServerConnection" ],
-        [ "ServerMessage", "classdeskflow_1_1gui_1_1ServerMessage.html", "classdeskflow_1_1gui_1_1ServerMessage" ],
         [ "FileTail", "classdeskflow_1_1gui_1_1FileTail.html", "classdeskflow_1_1gui_1_1FileTail" ],
         [ "Logger", "classdeskflow_1_1gui_1_1Logger.html", "classdeskflow_1_1gui_1_1Logger" ]
       ] ],
@@ -37,6 +34,7 @@ var annotated_dup =
         [ "ServerConfigReadException", "classdeskflow_1_1server_1_1ServerConfigReadException.html", "classdeskflow_1_1server_1_1ServerConfigReadException" ]
       ] ],
       [ "FinalAction", "classdeskflow_1_1FinalAction.html", "classdeskflow_1_1FinalAction" ],
+      [ "KeyboardLayoutManager", "classdeskflow_1_1KeyboardLayoutManager.html", "classdeskflow_1_1KeyboardLayoutManager" ],
       [ "KeyMap", "classdeskflow_1_1KeyMap.html", "classdeskflow_1_1KeyMap" ],
       [ "Screen", "classdeskflow_1_1Screen.html", "classdeskflow_1_1Screen" ],
       [ "IStream", "classdeskflow_1_1IStream.html", "classdeskflow_1_1IStream" ],
